@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cookie Demo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 0 16px;
+    }
+    footer {
+      margin-top: 40px;
+      font-size: 0.85rem;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <h1>Cookie Demo</h1>
+  <p id="message"></p>
+  <p id="cookieOutput"></p>
+  <button id="resetBtn">Delete Cookie</button>
+
+  <footer>
+    &copy; 2026 Joshua John &mdash; Assignment A10 &mdash; Due 11/17/2026
+  </footer>
+
+  <script>
+    var COOKIE_NAME = "userCookie";
+
+    function setCookie(name, value, days) {
+      var d = new Date();
+      d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+      document.cookie = encodeURIComponent(name) + "=" + encodeURIComponent(value) +
+        "; expires=" + d.toUTCString() + "; path=/; SameSite=Lax";
+    }
+
+    function getCookie(name) {
+      var parts = document.cookie ? document.cookie.split("; ") : [];
+      for (var i = 0; i < parts.length; i++) {
+        var idx = parts[i].indexOf("=");
+        if (decodeURIComponent(parts[i].substring(0, idx)) === name) {
+          return decodeURIComponent(parts[i].substring(idx + 1));
+        }
+      }
+      return null;
+    }
+
+    function deleteCookie(name) {
+      document.cookie = encodeURIComponent(name) +
+        "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+    }
+
+    document.getElementById("resetBtn").addEventListener("click", function () {
+      deleteCookie(COOKIE_NAME);
+      location.reload();
+    });
+
+    window.addEventListener("load", function () {
+      var message = document.getElementById("message");
+      var output = document.getElementById("cookieOutput");
+      var existing = getCookie(COOKIE_NAME);
+
+      if (existing !== null) {
+        message.textContent = "Your stored cookie value is:";
+        output.textContent = existing;
+      } else {
+        var entry = prompt("Please enter a value to store in a cookie:");
+        if (entry !== null && entry.trim() !== "") {
+          setCookie(COOKIE_NAME, entry.trim(), 7);
+          message.textContent = getCookie(COOKIE_NAME) !== null
+            ? "Cookie saved. Refresh the page to see its value."
+            : "The cookie could not be saved. Try a different browser window or serve the page over https.";
+        } else {
+          message.textContent = "No cookie was set. Refresh the page to be asked again.";
+        }
+      }
+    });
+  </script>
+</body>
+</html>
