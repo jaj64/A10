@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cookie Demo</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f2f4f8;
+      color: #222;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    main {
+      flex: 1;
+      max-width: 560px;
+      width: 100%;
+      margin: 40px auto;
+      padding: 0 16px;
+    }
+    h1 { margin-top: 0; }
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+    }
+    #cookieOutput {
+      background: #eef2ff;
+      border-left: 4px solid #2f6fed;
+      padding: 12px;
+      font-size: 1.1rem;
+      word-break: break-all;
+    }
+    #message { margin: 12px 0; color: #444; }
+    button {
+      padding: 8px 14px;
+      border: none;
+      border-radius: 4px;
+      background: #666;
+      color: #fff;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+    button:hover { opacity: 0.9; }
+    footer {
+      text-align: center;
+      padding: 16px;
+      font-size: 0.85rem;
+      color: #555;
+      background: #e3e7ef;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Cookie Demo</h1>
+    <div class="card">
+      <div id="message"></div>
+      <div id="cookieOutput" hidden></div>
+      <p><button id="resetBtn">Delete Cookie (reset demo)</button></p>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2026 Joshua John &mdash; Assignment A10 &mdash; Due 11/17/2026
+  </footer>
+
+  <script>
+    var COOKIE_NAME = "userCookie";
+
+    function setCookie(name, value, days) {
+      var d = new Date();
+      d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+      document.cookie = encodeURIComponent(name) + "=" + encodeURIComponent(value) +
+        "; expires=" + d.toUTCString() + "; path=/; SameSite=Lax";
+    }
+
+    function getCookie(name) {
+      var parts = document.cookie ? document.cookie.split("; ") : [];
+      for (var i = 0; i < parts.length; i++) {
+        var idx = parts[i].indexOf("=");
+        if (decodeURIComponent(parts[i].substring(0, idx)) === name) {
+          return decodeURIComponent(parts[i].substring(idx + 1));
+        }
+      }
+      return null;
+    }
+
+    function deleteCookie(name) {
+      document.cookie = encodeURIComponent(name) +
+        "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+    }
+
+    function showCookie(value) {
+      var out = document.getElementById("cookieOutput");
+      out.textContent = COOKIE_NAME + " = " + value;
+      out.hidden = false;
+    }
+
+    document.getElementById("resetBtn").addEventListener("click", function () {
+      deleteCookie(COOKIE_NAME);
+      location.reload();
+    });
+
+    // Runs on every page load
+    window.addEventListener("load", function () {
+      var message = document.getElementById("message");
+      var existing = getCookie(COOKIE_NAME);
+
+      if (existing !== null) {
+        // Cookie already set: just display it (no input box)
+        message.textContent = "Welcome back! Your stored cookie value is:";
+        showCookie(existing);
+      } else {
+        // No cookie yet: pop-up box asks for the cookie value
+        var entry = prompt("Please enter a value to store in a cookie:");
+        if (entry !== null && entry.trim() !== "") {
+          setCookie(COOKIE_NAME, entry.trim(), 7);
+          if (getCookie(COOKIE_NAME) !== null) {
+            message.textContent = "Cookie saved! Refresh the page to see its value displayed.";
+          } else {
+            message.textContent = "The cookie could not be saved. If you opened this file directly (file://), serve it from a local web server instead.";
+          }
+        } else {
+          message.textContent = "No cookie was set. Refresh the page to be asked again.";
+        }
+      }
+    });
+  </script>
+</body>
+</html>
